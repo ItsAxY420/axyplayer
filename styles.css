@@ -1,0 +1,70 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* White background */
+    color: #2e7d32; /* Green text */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Main Container */
+.container {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Upper Warning Box Styling - matching outline as footer */
+.upper-warning {
+    border: 2px solid #2e7d32; /* Green border */
+    color: #2e7d32; /* Green text */
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+}
+
+/* Title Styling */
+.title {
+    color: #2e7d32; /* Green */
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Button Styling */
+.link-btn {
+    background-color: transparent;
+    border: 2px solid #2e7d32; /* Green border */
+    color: #2e7d32; /* Green text */
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 50px;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.link-btn:hover {
+    background-color: #2e7d32;
+    color: white; /* White text on hover */
+}
+
+/* Footer Styling */
+.footer {
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #2e7d32;
+    border: 2px solid #2e7d32; /* Green border */
+    padding: 10px;
+    border-radius: 10px;
+}
