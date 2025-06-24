@@ -1,89 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AxyPharm</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Password Protection Styles */
-        #passwordPage {
-            display: block;
-            height: 100vh;
-            background-color: #2e7d32; /* Green background */
-            color: white;
-            text-align: center;
-            padding-top: 200px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        #content {
-            display: none;
-        }
-        #passwordPage input {
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-        }
-        #passwordPage button {
-            padding: 10px 20px;
-            background-color: white;
-            color: #2e7d32;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AxyMusic</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Password Page -->
-    <div id="passwordPage">
-        <h2>Please enter the password to continue</h2>
-        <input type="password" id="passwordInput" placeholder="Enter Password" />
-        <button onclick="checkPassword()">Submit</button>
+  <div id="main-container">
+    <h1 class="title">AxyMusic, 24/7 Online Free Music For Everyone</h1>
+
+    <div class="link-buttons">
+      <a href="https://www.paypal.com/paypalme/iamaxy" class="nav-btn">Help Keep AxyMusic Alive</a>
+      <a href="https://itsaxy.github.io/ContactMe/" class="nav-btn">Contact Axy</a>
     </div>
 
-    <!-- Main Content (hidden initially) -->
-    <div id="content">
-        <div class="container">
-            <!-- Upper Label Box with matching outline -->
-            <div class="upper-warning">Axy or anyone named or associated with this name or tag is not responsible or related to this website!!!</div>
+    <div id="player-panel">
+      <img id="player-image" class="cover" src="" alt="Cover Art"/>
+      <div id="player-info">
+        <p id="player-name">No song playing</p>
+        <p id="player-album">Select a song...</p>
+      </div>
 
-            <!-- Title -->
-            <h1 class="title">AxyPharm</h1>
+      <div id="player-controls">
+        <button id="prev-button">⏪</button>
+        <button id="play-button">▶️</button> <!-- NEW -->
+        <button id="pause-button">⏸️</button>
+        <button id="next-button">⏩</button>
+        <button id="shuffle-button">🔀</button>
+        <button id="repeat-button">🔄✔️</button> <!-- NEW -->
+      </div>
 
-            <!-- Buttons -->
-            <div class="button-container">
-                <button class="link-btn" onclick="window.location.href='https://streamable.com/d3uidf'">[In Stock]💥Pop Rocks💥|(Hybrid 60/40, indica/sativa)|THC:22%-27%|Price 50/1</button>
-                <button class="link-btn" onclick="window.location.href='https://streamable.com/2fh539'">[Out Of Stock]🍓Sour Strawberry🍓|(Hybrid 60/40 indica/sativa)|THC:20-24% Price|70/1</button>
-                <button class="link-btn" onclick="window.location.href='https://streamable.com/arkne9'">[Out Of Stock]👑King Louis The 13th👑(INDICA)|🔥Cross:OG Kush x LA Confidential🔥|THC:25%+ Price 70/1</button>
-                <button class="link-btn" onclick="window.location.href='https://streamable.com/z8ttdq'">[Out Of Stock]☠️Critical Kush☠️|(INDICA)|THC:20%-23%|Price 50/1</button>
-            </div>
-
-            <!-- Lower Footer -->
-            <div class="footer">No Rights Reserved 2025-2050</div>
-        </div>
+      <audio id="player" controls>
+        <source id="audioSource" src="" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
     </div>
 
-    <script>
-        function checkPassword() {
-            const enteredPassword = document.getElementById('passwordInput').value;
-            const correctPassword = 'axy420';
-            
-            if (enteredPassword === correctPassword) {
-                // Hide the password page and show the content
-                document.getElementById('passwordPage').style.display = 'none';
-                document.getElementById('content').style.display = 'block';
-            } else {
-                alert('Incorrect password. Please try again.');
-            }
-        }
-    </script>
+    <form id="search-form">
+      <input id="saavn-search-box" placeholder="Search for a song..." />
+      <button type="submit">Search</button>
+    </form>
+
+    <div id="saavn-results"></div>
+    <button id="load-more">Load More</button>
+  </div>
+
+  <!-- SCRIPT TO ADD MISSING FEATURES WITHOUT TOUCHING JS FILES -->
+  <script>
+    // Simulate Play Button (Resume)
+    document.getElementById('play-button').addEventListener('click', () => {
+      const audio = document.getElementById('player');
+      audio.play();
+    });
+
+    // Add Repeat Button Behavior
+    let isRepeat = false;
+    document.getElementById('repeat-button').addEventListener('click', () => {
+      const audio = document.getElementById('player');
+      isRepeat = !isRepeat;
+      audio.loop = isRepeat;
+      document.getElementById('repeat-button').style.opacity = isRepeat ? '1' : '0.5';
+    });
+
+    // Auto-play next track when current ends
+    document.getElementById('player').addEventListener('ended', () => {
+      if (!document.getElementById('player').loop) {
+        document.getElementById('next-button').click(); // use existing control
+      }
+    });
+  </script>
+
+  <!-- YOUR ORIGINAL JS FILES, UNMODIFIED -->
+  <script src="functions.js"></script>
+  <script src="saavn-search.js"></script>
 </body>
 </html>
