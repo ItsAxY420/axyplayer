@@ -109,7 +109,7 @@ function setupControls() {
     isShuffle = !isShuffle;
     const btn = document.getElementById('shuffle-button');
     btn.style.opacity = isShuffle ? '1' : '0.5';
-    btn.textContent = isShuffle ? '⇄' : '⇄x';
+    btn.textContent = isShuffle ? '🔀' : '🔀✖️';
   };
 }
 
