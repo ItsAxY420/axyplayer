@@ -1,6 +1,6 @@
 let playlist = [];
 let currentIndex = 0;
-let isShuffle = true;
+let isShuffle = false;
 
 /**
  * Core function to play audio and update player UI.
@@ -103,16 +103,15 @@ function setupControls() {
     PlayAudio(url, id);
   };
 
-  // document.getElementById('pause-button').onclick = PauseAudio;
+  document.getElementById('pause-button').onclick = PauseAudio;
 
   document.getElementById('shuffle-button').onclick = () => {
     isShuffle = !isShuffle;
     const btn = document.getElementById('shuffle-button');
     btn.style.opacity = isShuffle ? '1' : '0.5';
-    btn.textContent = isShuffle ? '⇄' : '⇄x';
+    btn.textContent = isShuffle ? '⇄' : '⇄';
   };
 }
-
 
 /**
  * Handle song search form
@@ -129,13 +128,6 @@ function setupSearchForm() {
   renderResults('Lil Peep');
 }
 
-// Auto-play next track when current ends
-document.getElementById('player').addEventListener('ended', () => {
-  if (!document.getElementById('player').loop) {
-    document.getElementById('next-button').click(); // use existing control
-  }
-});
-
 /**
  * Load More Button — pagination
  */
@@ -149,6 +141,12 @@ function setupLoadMore() {
   });
 }
 
+/**
+ * Add to download list (simulated)
+ */
+function AddDownload(id) {
+  alert(`Pretend we're compiling and downloading song: ${id}`);
+}
 
 // Initialize everything once DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
