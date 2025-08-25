@@ -107,6 +107,7 @@ main {
 .search-form button.btn {
   background: var(--dark-purple);
   color: var(--dark-bg);
+  border-radius: 0.8rem;
 }
 
 .results-wrapper {
