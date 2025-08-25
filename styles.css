@@ -111,11 +111,11 @@ main {
 
 .results-wrapper {
   display: ruby-base;
-  grid-template-columns: repeat(auto-fill, minmax(10px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 10rem;
 }
 .song-container {
-  background: var(--dark-gray);
+  background: var(--dark-bg);
   border: 1px solid var(--dark-purple);
   border-radius: 0.8rem;
   overflow: hidden;
