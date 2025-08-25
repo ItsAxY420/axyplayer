@@ -1,9 +1,9 @@
 /* 1. Define color variables for easy theming */
 :root {
-  --dark-bg: #000000;
+  --dark-bg: #2b2a2a;
   --dark2-bg: #2b2a2a;
-  --dark-purple: #7a05c9;
-  --light: #000000;
+  --dark-purple: #B388FF;
+  --light: #2b2a2a;
 }
 
 /* 2. Mobile-first reset */
@@ -44,7 +44,7 @@ header h1 {
 }
 
 #player-panel {
-  background-color: #2b002b;
+  background-color: #270153;
   padding: 15px;
   border-radius: 10px;
   margin-bottom: 20px;
