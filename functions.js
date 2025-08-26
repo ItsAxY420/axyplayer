@@ -156,3 +156,89 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSearchForm();
   setupLoadMore();
 });
+
+/* ----------------------------------------------------------------------
+   ADDITIONS FOR iOS LOCKSCREEN + CAST (do NOT change any existing code)
+---------------------------------------------------------------------- */
+
+(function() {
+  const audio = document.getElementById('player');
+
+  // --- iOS Media Session ---
+  if ('mediaSession' in navigator) {
+    // Action handlers for next/prev/play/pause
+    try {
+      navigator.mediaSession.setActionHandler('previoustrack', () => document.getElementById('prev-button').click());
+      navigator.mediaSession.setActionHandler('nexttrack', () => document.getElementById('next-button').click());
+      navigator.mediaSession.setActionHandler('play', () => audio.play());
+      navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+      // Clear seek handlers to avoid ±10s UI
+      try {
+        navigator.mediaSession.setActionHandler('seekforward', null);
+        navigator.mediaSession.setActionHandler('seekbackward', null);
+      } catch(e) {}
+    } catch(e) {}
+
+    const refreshMeta = () => {
+      try {
+        const title = document.getElementById('player-name')?.textContent || 'AxyMusic';
+        const artist = document.getElementById('player-album')?.textContent || '';
+        const art = document.getElementById('player-image')?.src || '';
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: title,
+          artist: artist,
+          album: artist,
+          artwork: art ? [{ src: art, sizes: '512x512', type: 'image/png' }] : []
+        });
+      } catch(e) {}
+    };
+    const refreshPos = () => {
+      try {
+        if (isFinite(audio.duration) && !isNaN(audio.duration)) {
+          navigator.mediaSession.setPositionState({
+            duration: audio.duration,
+            position: audio.currentTime,
+            playbackRate: audio.playbackRate
+          });
+        }
+        navigator.mediaSession.playbackState = audio.paused ? 'paused' : 'playing';
+      } catch(e) {}
+    };
+
+    ['play','pause','loadedmetadata','timeupdate','durationchange','ratechange'].forEach(ev => {
+      audio.addEventListener(ev, () => { refreshMeta(); refreshPos(); });
+    });
+  }
+
+  // --- Google Cast ---
+  window.__onGCastApiAvailable = function(isAvailable) {
+    if (!isAvailable) return;
+    const context = cast.framework.CastContext.getInstance();
+    context.setOptions({
+      receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+      autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+    });
+
+    const loadToCast = () => {
+      const session = context.getCurrentSession();
+      if (!session) return;
+      const src = document.getElementById('audioSource')?.src || '';
+      if (!src) return;
+      const type = src.toLowerCase().endsWith('.mp3') ? 'audio/mpeg' : 'audio/mp4';
+      const mediaInfo = new chrome.cast.media.MediaInfo(src, type);
+      const title = document.getElementById('player-name')?.textContent || 'AxyMusic';
+      const artist = document.getElementById('player-album')?.textContent || '';
+      const art = document.getElementById('player-image')?.src || '';
+      mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+      mediaInfo.metadata.title = title;
+      mediaInfo.metadata.artist = artist;
+      if (art) mediaInfo.metadata.images = [{ url: art }];
+      const request = new chrome.cast.media.LoadRequest(mediaInfo);
+      session.loadMedia(request).catch(err => console.warn('Cast load error', err));
+    };
+
+    // Auto-load when playing a track
+    audio.addEventListener('play', loadToCast);
+    audio.addEventListener('loadedmetadata', loadToCast);
+  };
+})();
