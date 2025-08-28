@@ -68,12 +68,12 @@ async function renderResults(query, page = 1) {
       container.className = 'song-container';
       container.innerHTML = `
         <img id="${id}-i" src="${image}" />
+       <div class="song-actions">
+          <button onclick="PlayAudio('${url}', '${id}'); currentIndex = ${index};">▶</button>
+        </div>
         <div class="song-info">
           <p id="${id}-n">${name}</p>
           <p id="${id}-a">${album}</p>
-        </div>
-        <div class="song-actions">
-          <button onclick="PlayAudio('${url}', '${id}'); currentIndex = ${index};">▶</button>
         </div>
       `;
       resultsContainer.appendChild(container);
