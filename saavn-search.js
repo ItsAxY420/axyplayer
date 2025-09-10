@@ -117,9 +117,9 @@ function TextAbstract(text, length) {
     text = text.substring(0, last);
     return text + "...";
 }
-if(window.location.hash) {
-   doSaavnSearch(window.location.hash.substring(1));
-} else {doSaavnSearch('Lil Peep',1);}
+// if(window.location.hash) {
+//    doSaavnSearch(window.location.hash.substring(1));
+// } else {doSaavnSearch('Lil Peep',0);}
 
 addEventListener('hashchange', event => { });
 onhashchange = event => {doSaavnSearch(window.location.hash.substring(1))};
