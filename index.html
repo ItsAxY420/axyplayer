@@ -1,16 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AxyMusic</title>
-  <link rel="stylesheet" href="styles.css">
-  <!-- Google Cast sender script -->
+  <link rel="stylesheet" href="styles.css" />
   <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework"></script>
 </head>
 <body>
-<!-- Hidden placeholders to prevent JS errors (do not display) -->
+<!-- Hidden placeholders to prevent JS errors (unchanged) -->
 <button id="play-button" style="display:none" aria-hidden="true"></button>
 <button id="repeat-button" style="display:none" aria-hidden="true"></button>
 
@@ -19,16 +17,23 @@
   <nav>
     <ul class="nav-links">
       <li><a href="https://contactme-zeta.vercel.app" class="btn">🟣Contact Axy🟣</a></li>
-      <li><a href="https://www.paypal.com/paypalme/iamaxy" class="btn">💜Help Keep AxyMusic Alive💜</a></li>
+      <li><a href="https://www.paypal.com/paypalme/iamaxy" class="btn">💜Coffee💜</a></li>
+      <!-- Liked button with live count badge -->
+      <li>
+        <a href="liked.html" class="btn" id="liked-link">
+          ♥ Liked <span id="liked-count" class="badge">0</span>
+        </a>
+      </li>
+    </ul>
   </nav>
 </header>
 
+<!-- Player panel (artwork small) -->
 <div id="player-panel">
-  <img id="player-image" class="cover" src="" alt="Cover Art"/>
+  <img id="player-image" class="cover" src="" alt="Cover Art" />
   <div id="player-info">
     <p id="player-name">No song playing</p>
     <p id="player-album">Select a song...</p>
-    <!-- Enable AirPlay from the audio element -->
     <audio id="player" controls controlsList="download" x-webkit-airplay="allow" playsinline>
       <source id="audioSource" src="">
     </audio>
@@ -37,82 +42,72 @@
 
 <section class="controls">
   <button id="prev-button" class="control-btn">⏮</button>
-  <!-- <button id="play-button" class="control-btn">▶️</button> -->
-  <!-- <button id="pause-button" class="control-btn">⏸</button> -->
   <button id="next-button" class="control-btn">⏭</button>
-  <button id="shuffle-button" class="control-btn">🔀</button>
+  <!-- shuffle button moved to bottom bar exactly like liked.html -->
 </section>
 
-<footer>
+<!-- <footer>
   <li><button><a href="https://drive.google.com/drive/folders/1AWjJ1gqYAEvDAzTuxQymy70HWjuM0N-t" class="btn">💜🖤Lil Peep All Music Download🖤💜</a></button>
   <li><button><a href="https://drive.google.com/drive/folders/17Zern_7lx5lSHT93bIAfpqUmiujmQgsY" class="btn">💜Axy's Favourites💜</a></button>
-</footer>
+</footer> -->
 
 <form id="search-form" class="search-form">
-  <input id="saavn-search-box" type="search for any song here!" placeholder="search for any song here!">
+  <input id="saavn-search-box" type="search" placeholder="search for any song here!">
   <button id="saavn-search-trigger" class="btn">🔎search🔍</button>
 </form>
 
-<div id="saavn-results" class="results-wrapper">
-  <!-- Results injected here -->
-</div>
+<!-- RESULTS LIST (lines) -->
+<div id="saavn-results" class="results-wrapper"></div>
+
 <button id="load-more" class="btn load-more-btn">Load More Songs</button>
 <button id="loadmore" style="display:none" aria-hidden="true"></button>
 
-<!-- SCRIPT TO ADD MISSING FEATURES WITHOUT TOUCHING JS FILES -->
-<script>
-  // Simulate Play Button (Resume)
-  document.getElementById('play-button').addEventListener('click', () => {
-    const audio = document.getElementById('player');
-    audio.play();
-  });
-
-  // Add Repeat Button Behavior
-  let isRepeat = false;
-  document.getElementById('repeat-button').addEventListener('click', () => {
-    const audio = document.getElementById('player');
-    isRepeat = !isRepeat;
-    audio.loop = isRepeat;
-    document.getElementById('repeat-button').style.opacity = isRepeat ? '1' : '0.5';
-  });
-
-  // Auto-play next track when current ends
-  document.getElementById('player').addEventListener('ended', () => {
-    if (!document.getElementById('player').loop) {
-      document.getElementById('next-button').click(); // use existing control
-    }
-  });
-</script>
-
-<!-- YOUR ORIGINAL JS FILES, UNMODIFIED -->
 <script src="functions.js"></script>
 <script src="saavn-search.js"></script>
 
-<!-- Floating Soundbar -->
+<!-- Floating bottom bar -->
 <div id="floating-soundbar" role="region" aria-label="Floating audio controls">
-  <button id="float-prev" aria-label="Previous">⏮</button>
-  <button id="float-play" aria-label="Play/Pause">▶️</button>
-  <button id="float-next" aria-label="Next">⏭</button>
-  <select id="sleep-timer" aria-label="Sleep timer">
-    <option value="">⏲ Sleep</option>
-    <option value="900">15 min</option>
-    <option value="1800">30 min</option>
-    <option value="2700">45 min</option>
-    <option value="3600">1 hour</option>
-  </select>
-  <!-- AirPlay / Google Cast Buttons (always visible if supported) -->
-  <button id="cast-button" aria-label="Cast to TV" style="display:none">📡</button>
-  <button id="airplay-button" aria-label="AirPlay" style="display:none">📺</button>
+  <img id="bar-cover" class="bar-cover" alt="">
+  <div class="bar-meta">
+    <div id="bar-title" class="bar-title">Nothing playing</div>
+    <div id="bar-artist" class="bar-artist"></div>
+  </div>
+
+  <div class="bar-controls">
+    <button id="float-prev" aria-label="Previous">⏮</button>
+    <button id="float-play" aria-label="Play/Pause">▶️</button>
+    <button id="float-next" aria-label="Next">⏭</button>
+  </div>
+
+  <div class="bar-actions">
+    <!-- Moved here: exact same shuffle button (same id) -->
+    <button id="shuffle-button" class="control-btn" title="Shuffle">🔀</button>
+
+    <button id="bar-like" title="Like">♡</button>
+    <!-- <button id="bar-queue" title="Add to Queue">Play Next</button> -->
+    <select id="sleep-timer" aria-label="Sleep timer">
+      <option value="">⏲Sleep</option>
+      <option value="900">15m</option>
+      <option value="1800">30m</option>
+      <option value="2700">45m</option>
+      <option value="3600">1h</option>
+    </select>
+    <button id="cast-button" aria-label="Cast to TV" style="display:none">Google Cast📡</button>
+    <button id="airplay-button" aria-label="AirPlay" style="display:none">Air Play📺</button>
+  </div>
+
+  <!-- Seek bar pinned above the fixed bar -->
+  <input id="bar-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
 </div>
 
 <footer>2025 Saavn Media Limited All rights reserved
-<li><a href="https://wiz64.com/sponsor" class="btn">🖤Special Thanks to wiz64🖤</a></li>
-<li><a href="https://contactme-zeta.vercel.app" class="btn">💜Made By Axy💜</a></li>
+  <li><a href="https://wiz64.com/sponsor" class="btn">🖤Special Thanks to wiz64🖤</a></li>
+  <li><a href="https://contactme-zeta.vercel.app" class="btn">💜Made By Axy💜</a></li>
 </footer>
 
+<!-- Floating bar wiring -->
 <script>
 (function() {
-  // Ensure scripts run after DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFloatingBar);
   } else {
@@ -121,222 +116,52 @@
 
   function initFloatingBar() {
     const audio = document.getElementById('player');
-    if (!audio) return;
-
     const playBtn = document.getElementById('float-play');
     const prevBtn = document.getElementById('float-prev');
     const nextBtn = document.getElementById('float-next');
+    const seek = document.getElementById('bar-seek');
     const sleepTimer = document.getElementById('sleep-timer');
     const airplayBtn = document.getElementById('airplay-button');
     const castBtn = document.getElementById('cast-button');
+
     let sleepTimeout = null;
 
-    function updatePlayButton() {
-      if (!playBtn) return;
+    const updatePlayButton = () => {
       playBtn.textContent = audio.paused ? '▶️' : '⏸';
       playBtn.setAttribute('aria-pressed', audio.paused ? 'false' : 'true');
-    }
+    };
 
-    // Wire up events
-    if (playBtn) {
-      playBtn.addEventListener('click', function() {
-        if (audio.paused) {
-          audio.play();
-        } else if (typeof PauseAudio === 'function') {
-          PauseAudio();
-        } else {
-          audio.pause();
-        }
-        updatePlayButton();
-      });
-    }
-
-    if (prevBtn) {
-      prevBtn.addEventListener('click', function() {
-        const builtinPrev = document.getElementById('prev-button');
-        if (builtinPrev) { builtinPrev.click(); return; }
-        try {
-          if (typeof playlist !== 'undefined' && playlist.length > 0) {
-            window.currentIndex = (window.currentIndex - 1 + playlist.length) % playlist.length;
-            const track = playlist[window.currentIndex];
-            if (track && typeof PlayAudio === 'function') PlayAudio(track.url, track.id);
-          }
-        } catch (e) { console.warn('Prev fallback failed:', e); }
-      });
-    }
-
-    if (nextBtn) {
-      nextBtn.addEventListener('click', function() {
-        const builtinNext = document.getElementById('next-button');
-        if (builtinNext) { builtinNext.click(); return; }
-        try {
-          if (typeof playlist !== 'undefined' && playlist.length > 0) {
-            window.currentIndex = (window.currentIndex + 1) % playlist.length;
-            const track = playlist[window.currentIndex];
-            if (track && typeof PlayAudio === 'function') PlayAudio(track.url, track.id);
-          }
-        } catch (e) { console.warn('Next fallback failed:', e); }
-      });
-    }
-
-    // Keep icon synced even if user uses native controls
+    playBtn.addEventListener('click', () => { if (audio.paused) audio.play(); else audio.pause(); updatePlayButton(); });
+    prevBtn.addEventListener('click', () => document.getElementById('prev-button')?.click());
+    nextBtn.addEventListener('click', () => document.getElementById('next-button')?.click());
     audio.addEventListener('play', updatePlayButton);
     audio.addEventListener('pause', updatePlayButton);
-    audio.addEventListener('ended', updatePlayButton);
     updatePlayButton();
 
-    // Sleep timer
-    if (sleepTimer) {
-      sleepTimer.addEventListener('change', function() {
-        if (sleepTimeout) clearTimeout(sleepTimeout);
-        const seconds = parseInt(this.value, 10);
-        if (seconds) {
-          sleepTimeout = setTimeout(function() {
-            if (typeof PauseAudio === 'function') { PauseAudio(); } else { audio.pause(); }
-            sleepTimer.value = '';
-            updatePlayButton();
-          }, seconds * 1000);
-        }
-      });
-    }
+    audio.addEventListener('timeupdate', () => {
+      if (isFinite(audio.duration)) seek.value = (audio.currentTime / audio.duration) * 100 || 0;
+    });
+    seek.addEventListener('input', () => {
+      if (isFinite(audio.duration)) audio.currentTime = (seek.value / 100) * audio.duration;
+    });
 
-    // --------- Media Session (iOS lock screen) ---------
-    if ('mediaSession' in navigator) {
-      // Map controls
-      try {
-        navigator.mediaSession.setActionHandler('previoustrack', function() {
-          const b = document.getElementById('prev-button'); if (b) b.click();
-        });
-        navigator.mediaSession.setActionHandler('nexttrack', function() {
-          const b = document.getElementById('next-button'); if (b) b.click();
-        });
-        navigator.mediaSession.setActionHandler('play', function() { audio.play(); });
-        navigator.mediaSession.setActionHandler('pause', function() {
-          if (typeof PauseAudio === 'function') PauseAudio(); else audio.pause();
-        });
-        // Clear skip handlers so iOS prefers next/prev UI
-        try {
-          navigator.mediaSession.setActionHandler('seekforward', null);
-          navigator.mediaSession.setActionHandler('seekbackward', null);
-        } catch(e) {}
-      } catch (e) {
-        console.warn('MediaSession handlers error:', e);
-      }
+    sleepTimer.addEventListener('change', () => {
+      if (sleepTimeout) clearTimeout(sleepTimeout);
+      const s = parseInt(sleepTimer.value, 10);
+      if (s) sleepTimeout = setTimeout(() => { audio.pause(); sleepTimer.value=''; updatePlayButton(); }, s*1000);
+    });
 
-      const refreshMeta = () => {
-        try {
-          const title = document.getElementById('player-name')?.textContent || 'AxyMusic';
-          const artist = document.getElementById('player-album')?.textContent || '';
-          const artUrl = document.getElementById('player-image')?.src || '';
-          navigator.mediaSession.metadata = new MediaMetadata({
-            title: title,
-            artist: artist,
-            album: artist,
-            artwork: artUrl ? [{ src: artUrl, sizes: '512x512', type: 'image/png' }] : []
-          });
-        } catch (e) {}
-      };
-
-      const refreshPosition = () => {
-        try {
-          if (isFinite(audio.duration) && !isNaN(audio.duration)) {
-            navigator.mediaSession.setPositionState({
-              duration: audio.duration || 0,
-              position: audio.currentTime || 0,
-              playbackRate: audio.playbackRate || 1
-            });
-          }
-          navigator.mediaSession.playbackState = audio.paused ? 'paused' : 'playing';
-        } catch (e) {}
-      };
-
-      // Update on key audio events
-      ['loadedmetadata','durationchange','play','pause','timeupdate','ratechange','ended'].forEach(ev => {
-        audio.addEventListener(ev, () => { refreshMeta(); refreshPosition(); });
-      });
-
-      // Also observe UI text/image changes caused by PlayAudio without touching your JS
-      const observeTargets = ['player-name','player-album','player-image'];
-      const mo = new MutationObserver(() => { refreshMeta(); refreshPosition(); });
-      observeTargets.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) mo.observe(el, { attributes:true, attributeFilter:['src'], childList:true, subtree:true, characterData:true });
-      });
-
-      // Initial push
-      refreshMeta();
-      refreshPosition();
-    }
-
-    // ---------- AirPlay (keep button stable) ----------
     if (window.WebKitPlaybackTargetAvailabilityEvent || audio.webkitShowPlaybackTargetPicker) {
       airplayBtn.style.display = 'inline-block';
-      airplayBtn.addEventListener('click', () => {
-        if (audio.webkitShowPlaybackTargetPicker) {
-          audio.webkitShowPlaybackTargetPicker();
-        }
-      });
-    } else {
-      airplayBtn.style.display = 'none';
+      airplayBtn.addEventListener('click', () => audio.webkitShowPlaybackTargetPicker?.());
     }
 
-    // ---------- Google Cast ----------
     window.__onGCastApiAvailable = function(isAvailable) {
       if (!isAvailable) return;
-
-      const context = cast.framework.CastContext.getInstance();
-      context.setOptions({
-        receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-        autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-      });
-
       castBtn.style.display = 'inline-block';
-
-      const loadCurrentToCast = () => {
-        const session = context.getCurrentSession();
-        if (!session) return;
-        const src = document.getElementById('audioSource')?.src || '';
-        if (!src) return;
-        // Guess MIME
-        const type = src.toLowerCase().endsWith('.mp3') ? 'audio/mpeg' : 'audio/mp4';
-        const mediaInfo = new chrome.cast.media.MediaInfo(src, type);
-
-        // Metadata
-        const title = document.getElementById('player-name')?.textContent || 'AxyMusic';
-        const artist = document.getElementById('player-album')?.textContent || '';
-        const art = document.getElementById('player-image')?.src || '';
-        mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
-        mediaInfo.metadata.title = title;
-        mediaInfo.metadata.artist = artist;
-        if (art) { mediaInfo.metadata.images = [{ url: art }]; }
-
-        const request = new chrome.cast.media.LoadRequest(mediaInfo);
-        session.loadMedia(request).catch(err => console.warn('Cast load error:', err));
-      };
-
-      castBtn.addEventListener('click', () => {
-        context.requestSession().catch(err => console.warn('Cast request error:', err));
-      });
-
-      context.addEventListener(cast.framework.CastContextEventType.SESSION_STATE_CHANGED, (e) => {
-        if (e.sessionState === cast.framework.SessionState.SESSION_STARTED ||
-            e.sessionState === cast.framework.SessionState.SESSION_RESUMED) {
-          loadCurrentToCast();
-        }
-      });
-
-      // Keep receiver synced when track changes/plays
-      audio.addEventListener('play', loadCurrentToCast);
-      audio.addEventListener('loadedmetadata', loadCurrentToCast);
     };
   }
 })();
 </script>
-
-<script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
-
 </body>
 </html>
