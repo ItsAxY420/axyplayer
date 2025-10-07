@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AxyMusic — Liked</title>
   <link rel="stylesheet" href="styles.css" />
-  <!-- Cast sender (kept for parity with index) -->
   <script src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework"></script>
 </head>
 <body>
-<!-- Hidden placeholders to prevent JS errors for existing selectors -->
 <button id="play-button" style="display:none" aria-hidden="true"></button>
 <button id="repeat-button" style="display:none" aria-hidden="true"></button>
 
@@ -20,14 +18,12 @@
       <li><a href="index.html" class="btn">🏠 Back to Main</a></li>
       <li><a href="https://contactme-zeta.vercel.app" class="btn">🟣Contact Axy🟣</a></li>
       <li><a href="https://www.paypal.com/paypalme/iamaxy" class="btn">💜Coffee💜</a></li>
-      <li>
-        <a href="liked.html" class="btn" id="liked-link">♥ Liked <span id="liked-count" class="badge">0</span></a>
-      </li>
+      <li><a href="liked.html" class="btn" id="liked-link">♥ Liked <span class="badge" id="liked-count">0</span></a></li>
     </ul>
   </nav>
 </header>
 
-<!-- Player panel (artwork small) -->
+<!-- Player panel (kept, hidden by CSS for logic only) -->
 <div id="player-panel">
   <img id="player-image" class="cover" src="" alt="Cover Art" />
   <div id="player-info">
@@ -42,62 +38,115 @@
 <section class="controls">
   <button id="prev-button" class="control-btn" title="Previous">⏮</button>
   <button id="next-button" class="control-btn" title="Next">⏭</button>
-  <!-- shuffle button moved to bottom bar -->
 </section>
 
-<!-- Filter only within liked -->
 <form id="search-form" class="search-form">
   <input id="saavn-search-box" type="search" placeholder="Filter your liked songs…" />
+  <!-- ensure submit -->
   <button id="saavn-search-trigger" class="btn" type="submit">🔎Filter</button>
 </form>
 
-<!-- RESULTS LIST (only liked) -->
 <div id="saavn-results" class="results-wrapper"></div>
-
-<!-- Keep DOM parity; hidden here -->
 <button id="load-more" class="btn load-more-btn" style="display:none">Load More Songs</button>
 <button id="loadmore" style="display:none" aria-hidden="true"></button>
 
-<!-- This page uses its own logic (liked.js) so it won’t auto-search the Saavn API -->
 <script src="liked.js"></script>
 
-<!-- Floating bottom bar (same look/feel) -->
-<div id="floating-soundbar" role="region" aria-label="Floating audio controls">
-  <img id="bar-cover" class="bar-cover" alt="">
-  <div class="bar-meta">
-    <div id="bar-title" class="bar-title">Nothing playing</div>
-    <div id="bar-artist" class="bar-artist"></div>
+<!-- ===== Unified bottom deck (seek ABOVE meta, centered) ===== -->
+<div id="floating-deck" role="region" aria-label="Now playing controls">
+  <!-- Top: seek row -->
+  <div id="deck-seek">
+    <div id="seek-tray" aria-hidden="true"></div>
+    <input id="bar-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
   </div>
 
-  <div class="bar-controls">
-    <button id="float-prev" aria-label="Previous">⏮</button>
-    <button id="float-play" aria-label="Play/Pause">▶️</button>
-    <button id="float-next" aria-label="Next">⏭</button>
+  <div class="deck-divider" aria-hidden="true"></div>
+
+  <!-- Middle: metadata -->
+  <div id="floating-meta">
+    <img id="bar-cover" class="bar-cover" alt="">
+    <div class="bar-meta">
+      <div id="bar-title" class="bar-title">Nothing playing</div>
+      <div id="bar-artist" class="bar-artist"></div>
+    </div>
   </div>
 
-  <div class="bar-actions">
-    <!-- Moved here: exact same shuffle button (same id) -->
-    <button id="shuffle-button" class="control-btn" title="Shuffle">🔀</button>
+  <div class="deck-divider" aria-hidden="true"></div>
 
-    <button id="bar-like" title="Like">♡</button>
-    <button id="bar-queue" title="Add to Queue">➕</button>
-    <select id="sleep-timer" aria-label="Sleep timer">
-      <option value="">⏲</option>
-      <option value="900">15m</option>
-      <option value="1800">30m</option>
-      <option value="2700">45m</option>
-      <option value="3600">1h</option>
-    </select>
-    <button id="cast-button" aria-label="Cast to TV" style="display:none">📡</button>
-    <button id="airplay-button" aria-label="AirPlay" style="display:none">📺</button>
+  <!-- Bottom: controls -->
+  <div id="floating-soundbar">
+    <div class="bar-controls">
+      <button id="float-prev" aria-label="Previous">⏮</button>
+      <button id="float-play" aria-label="Play/Pause">▶️</button>
+      <button id="float-next" aria-label="Next">⏭</button>
+    </div>
+
+    <div class="bar-actions">
+      <button id="shuffle-button" class="control-btn" title="Shuffle">🔀</button>
+      <button id="bar-like" title="Like">♡</button>
+      <button id="bar-queue" title="Add to Queue">➕</button>
+      <select id="sleep-timer" aria-label="Sleep timer">
+        <option value="">⏲</option>
+        <option value="900">15m</option>
+        <option value="1800">30m</option>
+        <option value="2700">45m</option>
+        <option value="3600">1h</option>
+      </select>
+      <button id="cast-button" aria-label="Cast to TV" style="display:none">📡</button>
+      <button id="airplay-button" aria-label="AirPlay" style="display:none">📺</button>
+    </div>
   </div>
-
-  <input id="bar-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
 </div>
 
 <footer>2025 Saavn Media Limited All rights reserved
   <li><a href="https://wiz64.com/sponsor" class="btn">🖤Special Thanks to wiz64🖤</a></li>
   <li><a href="https://contactme-zeta.vercel.app" class="btn">💜Made By Axy💜</a></li>
 </footer>
+
+<!-- Helpers: purple seek fill + (if you later add artist buttons here, wiring will work) -->
+<script>
+(function () {
+  // If you add artist buttons to this page later, this will work out of the box
+  function renderArtist(artist) {
+    const box  = document.getElementById('saavn-search-box');
+    const form = document.getElementById('search-form');
+    if (!box) return;
+    box.value = artist;
+    if (form && typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+    } else if (typeof window.doSaavnSearch === 'function') {
+      window.doSaavnSearch(encodeURIComponent(artist));
+    }
+    document.getElementById('saavn-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.artist-btn').forEach(b => {
+      b.addEventListener('click', () => renderArtist(b.dataset.artist));
+    });
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireSeek);
+  } else {
+    wireSeek();
+  }
+  function wireSeek() {
+    const audio = document.getElementById('player');
+    const seek = document.getElementById('bar-seek');
+    function setSeekBG() {
+      const pct = (seek.valueAsNumber || 0);
+      seek.style.background = `linear-gradient(var(--dark-purple),var(--dark-purple)) 0/ ${pct}% 100% no-repeat, var(--seek-track)`;
+    }
+    audio.addEventListener('timeupdate', () => {
+      if (isFinite(audio.duration)) {
+        seek.value = (audio.currentTime / audio.duration) * 100 || 0;
+        setSeekBG();
+      }
+    });
+    seek.addEventListener('input', setSeekBG);
+    setSeekBG();
+  }
+})();
+</script>
 </body>
 </html>

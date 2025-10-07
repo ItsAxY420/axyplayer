@@ -1,8 +1,16 @@
 :root {
   --dark-bg: #2b2a2a;
-  --dark2-bg: #2b2a2a;
+  --deck-bg: #1f1f1f;            /* unified deck background */
   --dark-purple: #B388FF;
-  --light: #2b2a2a;
+
+  /* seek visuals */
+  --seek-track: #232323;         /* unfilled track (slightly lighter than deck) */
+  --seek-tray-border: rgba(179,136,255,.25);
+
+  /* sizing */
+  --deck-radius: 18px;
+  --deck-padding: 10px;
+  --divider-height: 2px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -13,13 +21,14 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding-bottom: 120px;
+  /* space for unified deck */
+  padding-bottom: 220px;
 }
 
 header {
   padding: 1rem;
   text-align: center;
-  background: var(--dark-bg, var(--dark-purple));
+  background: var(--dark-bg);
 }
 header h1 {
   text-align: center;
@@ -43,7 +52,6 @@ header h1 {
   font-weight: 600;
 }
 
-/* small badge for liked count */
 .badge {
   display: inline-block;
   min-width: 1.2em;
@@ -57,237 +65,158 @@ header h1 {
   text-align: center;
 }
 
-#player-panel {
-  background-color: #2b2a2a;
-  padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 16px;
+/* ===== Artists quick access ===== */
+.section-divider {
+  height: 2px;
+  margin: 10px 10px 0;
+  background: linear-gradient(90deg, rgba(179,136,255,.85), rgba(179,136,255,.6));
+  border-radius: 999px;
 }
-
-.cover {
-  display: block;
-  width: 96px;
-  height: 96px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin: 0 auto 8px;
-}
-
-#player-info p {
+.artists-section {
+  padding: 10px;
   text-align: center;
-  margin: 5px;
+}
+.artists-section h2 {
   font-size: 1rem;
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-.control-btn {
-  background: var(--dark-purple);
-  color: var(--dark-bg);
-  border: none;
-  padding: 0.6rem 0.9rem;
-  border-radius: 1rem;
-}
-
-.search-form {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding: 0 10px;
-}
-.search-form input {
-  flex: 1;
-  padding: 0.6rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--dark-purple);
-  background: var(--dark-gray, var(--dark2-bg));
+  font-weight: 700;
   color: var(--dark-purple);
+  margin: 10px 0 8px;
 }
-.search-form button.btn {
-  background: var(--dark-purple);
-  color: var(--dark-bg);
-  border-radius: 0.8rem;
-}
-
-/* Lines list */
-.results-wrapper {
-  display: block;
-  padding: 0 10px 60px;
-}
-.song-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 6px;
-  border-bottom: 1px solid rgba(179,136,255,.25);
-  background: transparent;
-}
-.song-container img {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  border-radius: 8px;
-  flex: 0 0 auto;
-}
-.song-info {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-  flex: 1 1 auto;
-  line-height: 1.2;
-}
-.song-info p:first-child {
-  font-weight: 600;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.song-info p:nth-child(2) {
-  font-size: .9rem; opacity: .85;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.song-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: 0 0 auto;
-}
-.song-actions button {
-  background: var(--dark-purple);
-  color: var(--dark-bg);
-  border: none;
-  border-radius: 8px;
-  padding: 6px 8px;
-  cursor: pointer;
-}
-
-.load-more-btn {
-  display: block;
-  margin: 1rem auto 140px;
-  background: var(--dark-purple);
-  color: var(--dark-bg);
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-}
-
-/* Floating bar */
-#floating-soundbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #1f1f1f;
-  border-top: 2px solid var(--dark-purple);
+.artist-buttons {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .artist-buttons { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+.artist-btn {
+  background: var(--dark-purple);
+  color: #1b1b1b;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform .06s ease, box-shadow .12s ease, filter .12s ease;
+  width: 100%;
+}
+.artist-btn:active { transform: translateY(1px) scale(0.99); }
+.artist-btn:hover { filter: brightness(1.05); }
+
+/* ===== Player panel (keep logic alive, center visuals) ===== */
+#player-panel { background-color: #2b2a2a; padding: 12px; border-radius: 10px; margin-bottom: 16px; }
+.cover { display:block; width:96px; height:96px; object-fit:cover; border-radius:12px; margin:0 auto 8px; }
+#player-info p { text-align:center; margin:5px; font-size:1rem; }
+
+/* Controls + Search (centered) */
+.controls { display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+.control-btn { background: var(--dark-purple); color:#1b1b1b; border:none; padding:0.6rem 0.9rem; border-radius:1rem; }
+
+.search-form { display:flex; justify-content:center; gap:0.5rem; margin-bottom:0.5rem; padding:0 10px; }
+.search-form input {
+  flex:1; padding:0.6rem; border-radius:0.5rem; border:1px solid var(--dark-purple);
+  background:#2b2a2a; color:var(--dark-purple); text-align:center;
+}
+.search-form button.btn { background:var(--dark-purple); color:#1b1b1b; border-radius:0.8rem; }
+
+/* Results list */
+.results-wrapper { display:block; padding:0 10px 160px; }
+.song-container { display:flex; align-items:center; gap:12px; padding:10px 6px; border-bottom:1px solid rgba(179,136,255,.25); background:transparent; }
+.song-container img { width:56px; height:56px; object-fit:cover; border-radius:8px; flex:0 0 auto; }
+.song-info { display:flex; flex-direction:column; gap:3px; min-width:0; flex:1 1 auto; line-height:1.2; }
+.song-info p:first-child,
+.song-info p:nth-child(2) { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.song-info p:first-child { font-weight:600; }
+.song-info p:nth-child(2) { font-size:.9rem; opacity:.85; }
+.song-actions { display:flex; align-items:center; gap:6px; flex:0 0 auto; }
+.song-actions button { background:var(--dark-purple); color:#1b1b1b; border:none; border-radius:8px; padding:6px 8px; cursor:pointer; }
+.load-more-btn { display:block; margin:1rem auto 220px; background:var(--dark-purple); color:#1b1b1b; border:none; padding:0.75rem 1.5rem; border-radius:0.5rem; }
+
+/* ===== Unified Deck ===== */
+#floating-deck {
+  position: fixed;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background: var(--deck-bg);
+  border-radius: var(--deck-radius);
+  box-shadow: 0 8px 28px rgba(0,0,0,.45);
+  padding: var(--deck-padding);
   z-index: 9999;
+  display: grid;
+  grid-template-rows: auto var(--divider-height) auto var(--divider-height) auto;
+  gap: 0;
 }
 
-#floating-soundbar .bar-cover {
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
-  border-radius: 6px;
-  background: #000;
+/* slim purple dividers */
+.deck-divider {
+  height: var(--divider-height);
+  background: linear-gradient(90deg, rgba(179,136,255,.85), rgba(179,136,255,.6));
+  border-radius: 999px;
 }
 
-#floating-soundbar .bar-meta { min-width: 0; }
-#floating-soundbar .bar-title {
-  font-weight: 600;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+/* Top row: seek row — centered */
+#deck-seek { position:relative; padding:6px 0 4px; }
+#seek-tray {
+  position:absolute; left:8px; right:8px; top:50%; transform:translateY(-50%);
+  height:22px; background:#1a1a1a; border:1px solid var(--seek-tray-border);
+  border-radius:999px; box-shadow: inset 0 1px 2px rgba(0,0,0,.35);
 }
-#floating-soundbar .bar-artist {
-  font-size: 0.85rem; opacity: 0.8;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+#bar-seek {
+  position:relative; display:block; width:calc(100% - 24px); margin:0 auto;
+  height:8px; -webkit-appearance:none; appearance:none; background:var(--seek-track);
+  border:none; border-radius:999px; outline:none;
+  box-shadow:0 0 10px var(--dark-purple), 0 0 18px rgba(179,136,255,.45);
+}
+#bar-seek::-moz-range-progress { background:var(--dark-purple); height:8px; border-radius:999px; }
+#bar-seek::-moz-range-track { background:transparent; height:8px; border-radius:999px; }
+#bar-seek::-webkit-slider-runnable-track { height:8px; background:transparent; border-radius:999px; }
+#bar-seek::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none; width:16px; height:16px; border-radius:50%;
+  background:var(--dark-purple); margin-top:-4px; border:0; box-shadow:0 0 8px rgba(179,136,255,.7);
 }
 
+/* Middle row: metadata — centered */
+#floating-meta {
+  display:grid; grid-template-columns: 1fr; gap:10px; padding:6px 6px; background:transparent; text-align:center;
+  justify-items:center; align-items:center;
+}
+#floating-meta .bar-cover { width:56px; height:56px; object-fit:cover; border-radius:10px; background:#000; }
+#floating-meta .bar-meta { min-width:0; max-width:90vw; }
+#floating-meta .bar-title { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#floating-meta .bar-artist { font-size:0.9rem; opacity:0.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* Bottom row: controls — centered, mobile-first */
+#floating-soundbar {
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+  padding:6px 6px 2px; background:transparent; text-align:center;
+}
 #floating-soundbar .bar-controls,
 #floating-soundbar .bar-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center;
 }
+#floating-soundbar button, #floating-soundbar select {
+  background: var(--dark-purple); color:#1b1b1b; border:none; border-radius:10px; padding:6px 10px;
+  font-size:1rem; cursor:pointer;
+}
+#floating-soundbar #bar-like.liked { background:#ff79c6; color:#1b1b1b; }
 
-#floating-soundbar button,
-#floating-soundbar select {
-  background: var(--dark-purple);
-  color: var(--dark-bg);
-  border: none;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-#floating-soundbar #bar-like.liked {
-  background: #ff79c6;
-  color: #1b1b1b;
-}
-
-#floating-soundbar #bar-seek {
-  position: absolute;
-  left: 0; right: 0;
-  bottom: 58px;
-  width: 100%;
-  height: 6px;
-  -webkit-appearance: none;
-  appearance: none;
-  background: #3a3a3a;
-}
-#floating-soundbar #bar-seek::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 14px; height: 14px; border-radius: 50%;
-  background: var(--dark-purple);
-}
-
-#floating-soundbar button#cast-button,
-#floating-soundbar button#airplay-button {
-  padding: 4px 8px;
-  font-size: 1.1rem;
-}
-
-/* =========================
-   STEALTH: TOP PLAYER PANEL ONLY
-   - Hide the top #player-panel visually & from pointer events
-   - Keep it in DOM so JS logic (play, queue, likes, etc.) remains intact
-   - Do NOT affect the floating soundbar
-   ========================= */
+/* Keep the top (hidden) player panel alive for logic */
 #player-panel {
-  position: fixed !important;   /* keep it "on top" of the page */
-  top: 0 !important;
-  left: 0 !important;
-  z-index: 10000 !important;
-
-  /* invisibility + no clicks, while still existing for JS */
-  opacity: 0 !important;
-  pointer-events: none !important;
-
-  /* minimize layout impact */
-  width: 1px !important;
-  height: 1px !important;
-  overflow: hidden !important;
-  clip: rect(0 0 0 0) !important;
-  clip-path: inset(50%) !important;
-  white-space: nowrap !important;
+  position: fixed !important;
+  top: 0 !important; left: 0 !important;
+  z-index: 10000 !important; opacity: 0 !important; pointer-events: none !important;
+  width: 1px !important; height: 1px !important; overflow: hidden !important;
+  clip: rect(0 0 0 0) !important; clip-path: inset(50%) !important; white-space: nowrap !important;
 }
-
-#player-panel .controls {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
 /* Hide ONLY the top controls' prev/next buttons (keep DOM + logic intact) */
-.controls #prev-button,
-.controls #next-button {
-  display: none !important;
+.controls #prev-button, .controls #next-button { display: none !important; }
+
+/* Small tweak for larger phones */
+@media (min-width: 420px) {
+  #floating-meta .bar-cover { width:64px; height:64px; }
 }

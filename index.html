@@ -18,7 +18,6 @@
     <ul class="nav-links">
       <li><a href="https://contactme-zeta.vercel.app" class="btn">🟣Contact Axy🟣</a></li>
       <li><a href="https://www.paypal.com/paypalme/iamaxy" class="btn">💜Coffee💜</a></li>
-      <!-- Liked button with live count badge -->
       <li>
         <a href="liked.html" class="btn" id="liked-link">
           ♥ Liked <span id="liked-count" class="badge">0</span>
@@ -28,7 +27,19 @@
   </nav>
 </header>
 
-<!-- Player panel (artwork small) -->
+<!-- ===== Artists quick access ===== -->
+<div class="section-divider" aria-hidden="true"></div>
+<section class="artists-section" aria-label="Artists">
+  <h2>Artists</h2>
+  <div class="artist-buttons">
+    <button class="artist-btn" data-artist="lilpeep">Lil Peep</button>
+    <button class="artist-btn" data-artist="liltjay">Lil Tjay</button>
+    <button class="artist-btn" data-artist="juicewrld">Juice WRLD</button>
+    <button class="artist-btn" data-artist="xxxtentacion">XXXTentacion</button>
+  </div>
+</section>
+
+<!-- Player panel (kept, hidden by CSS for logic only) -->
 <div id="player-panel">
   <img id="player-image" class="cover" src="" alt="Cover Art" />
   <div id="player-info">
@@ -43,20 +54,14 @@
 <section class="controls">
   <button id="prev-button" class="control-btn">⏮</button>
   <button id="next-button" class="control-btn">⏭</button>
-  <!-- shuffle button moved to bottom bar exactly like liked.html -->
 </section>
-
-<!-- <footer>
-  <li><button><a href="https://drive.google.com/drive/folders/1AWjJ1gqYAEvDAzTuxQymy70HWjuM0N-t" class="btn">💜🖤Lil Peep All Music Download🖤💜</a></button>
-  <li><button><a href="https://drive.google.com/drive/folders/17Zern_7lx5lSHT93bIAfpqUmiujmQgsY" class="btn">💜Axy's Favourites💜</a></button>
-</footer> -->
 
 <form id="search-form" class="search-form">
   <input id="saavn-search-box" type="search" placeholder="search for any song here!">
-  <button id="saavn-search-trigger" class="btn">🔎search🔍</button>
+  <!-- CHANGED: type=submit so the form listener in functions.js runs -->
+  <button id="saavn-search-trigger" class="btn" type="submit">🔎search🔍</button>
 </form>
 
-<!-- RESULTS LIST (lines) -->
 <div id="saavn-results" class="results-wrapper"></div>
 
 <button id="load-more" class="btn load-more-btn">Load More Songs</button>
@@ -65,39 +70,49 @@
 <script src="functions.js"></script>
 <script src="saavn-search.js"></script>
 
-<!-- Floating bottom bar -->
-<div id="floating-soundbar" role="region" aria-label="Floating audio controls">
-  <img id="bar-cover" class="bar-cover" alt="">
-  <div class="bar-meta">
-    <div id="bar-title" class="bar-title">Nothing playing</div>
-    <div id="bar-artist" class="bar-artist"></div>
+<!-- ===== Unified bottom deck (seek ABOVE meta, centered) ===== -->
+<div id="floating-deck" role="region" aria-label="Now playing controls">
+  <!-- Top: seek row -->
+  <div id="deck-seek">
+    <div id="seek-tray" aria-hidden="true"></div>
+    <input id="bar-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
   </div>
 
-  <div class="bar-controls">
-    <button id="float-prev" aria-label="Previous">⏮</button>
-    <button id="float-play" aria-label="Play/Pause">▶️</button>
-    <button id="float-next" aria-label="Next">⏭</button>
+  <div class="deck-divider" aria-hidden="true"></div>
+
+  <!-- Middle: metadata -->
+  <div id="floating-meta">
+    <img id="bar-cover" class="bar-cover" alt="">
+    <div class="bar-meta">
+      <div id="bar-title" class="bar-title">Nothing playing</div>
+      <div id="bar-artist" class="bar-artist"></div>
+    </div>
   </div>
 
-  <div class="bar-actions">
-    <!-- Moved here: exact same shuffle button (same id) -->
-    <button id="shuffle-button" class="control-btn" title="Shuffle">🔀</button>
+  <div class="deck-divider" aria-hidden="true"></div>
 
-    <button id="bar-like" title="Like">♡</button>
-    <!-- <button id="bar-queue" title="Add to Queue">Play Next</button> -->
-    <select id="sleep-timer" aria-label="Sleep timer">
-      <option value="">⏲Sleep</option>
-      <option value="900">15m</option>
-      <option value="1800">30m</option>
-      <option value="2700">45m</option>
-      <option value="3600">1h</option>
-    </select>
-    <button id="cast-button" aria-label="Cast to TV" style="display:none">Google Cast📡</button>
-    <button id="airplay-button" aria-label="AirPlay" style="display:none">Air Play📺</button>
+  <!-- Bottom: controls -->
+  <div id="floating-soundbar">
+    <div class="bar-controls">
+      <button id="float-prev" aria-label="Previous">⏮</button>
+      <button id="float-play" aria-label="Play/Pause">▶️</button>
+      <button id="float-next" aria-label="Next">⏭</button>
+    </div>
+
+    <div class="bar-actions">
+      <button id="shuffle-button" class="control-btn" title="Shuffle">🔀</button>
+      <button id="bar-like" title="Like">♡</button>
+      <select id="sleep-timer" aria-label="Sleep timer">
+        <option value="">⏲Sleep</option>
+        <option value="900">15m</option>
+        <option value="1800">30m</option>
+        <option value="2700">45m</option>
+        <option value="3600">1h</option>
+      </select>
+      <button id="cast-button" aria-label="Cast to TV" style="display:none">Google Cast📡</button>
+      <button id="airplay-button" aria-label="Air Play" style="display:none">Air Play📺</button>
+    </div>
   </div>
-
-  <!-- Seek bar pinned above the fixed bar -->
-  <input id="bar-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
 </div>
 
 <footer>2025 Saavn Media Limited All rights reserved
@@ -105,16 +120,40 @@
   <li><a href="https://contactme-zeta.vercel.app" class="btn">💜Made By Axy💜</a></li>
 </footer>
 
-<!-- Floating bar wiring -->
+<!-- Helpers: purple seek fill + artist button wiring -->
 <script>
 (function() {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initFloatingBar);
-  } else {
-    initFloatingBar();
+  // Artist quick-search: prefer your form submit (functions.js), else use legacy doSaavnSearch
+  function renderArtist(artist) {
+    const box  = document.getElementById('saavn-search-box');
+    const form = document.getElementById('search-form');
+    if (!box) return;
+    box.value = artist;
+
+    // Prefer the submit listener in functions.js (renderResults on submit) :contentReference[oaicite:2]{index=2}
+    if (form && typeof form.requestSubmit === 'function') {
+      form.requestSubmit();
+    } else if (typeof window.doSaavnSearch === 'function') {
+      // Fallback to legacy engine in saavn-search.js :contentReference[oaicite:3]{index=3}
+      window.doSaavnSearch(encodeURIComponent(artist));
+    }
+
+    document.getElementById('saavn-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  function initFloatingBar() {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.artist-btn').forEach(b => {
+      b.addEventListener('click', () => renderArtist(b.dataset.artist));
+    });
+  });
+
+  // Deck wiring (seek cosmetic only)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFloatingDeck);
+  } else {
+    initFloatingDeck();
+  }
+  function initFloatingDeck() {
     const audio = document.getElementById('player');
     const playBtn = document.getElementById('float-play');
     const prevBtn = document.getElementById('float-prev');
@@ -125,12 +164,10 @@
     const castBtn = document.getElementById('cast-button');
 
     let sleepTimeout = null;
-
     const updatePlayButton = () => {
       playBtn.textContent = audio.paused ? '▶️' : '⏸';
       playBtn.setAttribute('aria-pressed', audio.paused ? 'false' : 'true');
     };
-
     playBtn.addEventListener('click', () => { if (audio.paused) audio.play(); else audio.pause(); updatePlayButton(); });
     prevBtn.addEventListener('click', () => document.getElementById('prev-button')?.click());
     nextBtn.addEventListener('click', () => document.getElementById('next-button')?.click());
@@ -138,12 +175,21 @@
     audio.addEventListener('pause', updatePlayButton);
     updatePlayButton();
 
+    function setSeekBG() {
+      const pct = (seek.valueAsNumber || 0);
+      seek.style.background = `linear-gradient(var(--dark-purple),var(--dark-purple)) 0/ ${pct}% 100% no-repeat, var(--seek-track)`;
+    }
     audio.addEventListener('timeupdate', () => {
-      if (isFinite(audio.duration)) seek.value = (audio.currentTime / audio.duration) * 100 || 0;
+      if (isFinite(audio.duration)) {
+        seek.value = (audio.currentTime / audio.duration) * 100 || 0;
+        setSeekBG();
+      }
     });
     seek.addEventListener('input', () => {
       if (isFinite(audio.duration)) audio.currentTime = (seek.value / 100) * audio.duration;
+      setSeekBG();
     });
+    setSeekBG();
 
     sleepTimer.addEventListener('change', () => {
       if (sleepTimeout) clearTimeout(sleepTimeout);
@@ -155,7 +201,6 @@
       airplayBtn.style.display = 'inline-block';
       airplayBtn.addEventListener('click', () => audio.webkitShowPlaybackTargetPicker?.());
     }
-
     window.__onGCastApiAvailable = function(isAvailable) {
       if (!isAvailable) return;
       castBtn.style.display = 'inline-block';

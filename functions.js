@@ -229,7 +229,7 @@ async function renderResults(query, page = 1) {
         <div class="song-actions">
           <button onclick="PlayAudio('${url}','${id}'); currentIndex=${playlist.length - 1};">▶</button>
           <button data-like="${id}" onclick="toggleLike('${id}')" class="${isLiked(id)?'liked':''}">${isLiked(id) ? '♥' : '♡'}</button>
-          <button onclick="addToQueue('${id}')" title="Add to queue">Play Next</button>
+          <button onclick="addToQueue('${id}')" title="Add to queue">+Queue</button>
         </div>
       `;
       resultsContainer.appendChild(row);
@@ -430,3 +430,216 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+/* =========================
+   Minimal Export / Import (Upload Playlist) — non-invasive
+   ========================= */
+(() => {
+  const UPLOAD_KEY = 'axymusic_uploaded_playlist_txt';
+
+  // ---- tiny helpers (do NOT touch your existing code) ----
+  const readJSON = (k, fb) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch { return fb; } };
+  const writeJSON = (k, v)  => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+
+  // get current likes (IDs + META) from your globals or storage
+  function readCurrentLikes() {
+    // If your globals exist:
+    if (typeof window.liked !== 'undefined' && typeof window.likedMeta !== 'undefined') {
+      const idsSet = window.liked instanceof Set ? new Set(Array.from(window.liked)) : new Set([].concat(window.liked || []));
+      const meta   = (typeof window.likedMeta === 'object' && window.likedMeta) ? { ...window.likedMeta } : {};
+      return { idsSet, meta, source: 'globals' };
+    }
+    // Else try STORAGE_KEYS (your v2 keys)
+    if (typeof window.STORAGE_KEYS === 'object' && window.STORAGE_KEYS) {
+      try {
+        const rawIds  = JSON.parse(localStorage.getItem(window.STORAGE_KEYS.IDS)  || '[]');
+        const rawMeta = JSON.parse(localStorage.getItem(window.STORAGE_KEYS.META) || '{}');
+        return { idsSet: new Set(rawIds), meta: rawMeta || {}, source: 'storage-v2' };
+      } catch {}
+    }
+    // Legacy fallback: single array "liked"
+    try {
+      const arr = JSON.parse(localStorage.getItem('liked') || '[]');
+      // Use URL as id if object; else the string itself
+      const ids = arr.map(x => (typeof x === 'string' ? x : (x && (x.id || x.url || x.perma_url || x.streamUrl || x.audio)))).filter(Boolean);
+      const meta = {};
+      arr.forEach(x => {
+        if (!x) return;
+        const id = (typeof x === 'string') ? x : (x.id || x.url || x.perma_url || x.streamUrl || x.audio);
+        if (!id) return;
+        meta[id] = { id, name: x.name || '', album: x.album || '', image: x.image || '', url: x.url || x.perma_url || x.streamUrl || x.audio || '' };
+      });
+      return { idsSet: new Set(ids), meta, source: 'legacy' };
+    } catch {}
+    return { idsSet: new Set(), meta: {}, source: 'empty' };
+  }
+
+  function commitLikes(idsSet, meta) {
+    // Prefer your own persistAll() + globals if available
+    if (typeof window.liked !== 'undefined' && typeof window.likedMeta !== 'undefined') {
+      // sync globals
+      if (window.liked instanceof Set) {
+        window.liked = new Set(Array.from(idsSet));
+      } else {
+        window.liked = Array.from(idsSet);
+      }
+      window.likedMeta = meta;
+
+      if (typeof window.persistAll === 'function') {
+        try { window.persistAll(); } catch {}
+      } else if (typeof window.STORAGE_KEYS === 'object' && window.STORAGE_KEYS) {
+        try { localStorage.setItem(window.STORAGE_KEYS.IDS,  JSON.stringify(Array.from(idsSet))); } catch {}
+        try { localStorage.setItem(window.STORAGE_KEYS.META, JSON.stringify(meta)); } catch {}
+      }
+      try { window.dispatchEvent(new Event('likes-changed')); } catch {}
+      return;
+    }
+
+    // Else, if v2 storage keys exist
+    if (typeof window.STORAGE_KEYS === 'object' && window.STORAGE_KEYS) {
+      try { localStorage.setItem(window.STORAGE_KEYS.IDS,  JSON.stringify(Array.from(idsSet))); } catch {}
+      try { localStorage.setItem(window.STORAGE_KEYS.META, JSON.stringify(meta)); } catch {}
+      try { window.dispatchEvent(new Event('likes-changed')); } catch {}
+      return;
+    }
+
+    // Legacy fallback: write "liked" array as objects
+    const arr = Array.from(idsSet).map(id => {
+      const m = meta[id] || { id, name:'', album:'', image:'', url: '' };
+      return { id, name: m.name || '', album: m.album || '', image: m.image || '', url: m.url || '' };
+    });
+    try { localStorage.setItem('liked', JSON.stringify(arr)); } catch {}
+    try { window.dispatchEvent(new Event('likes-changed')); } catch {}
+  }
+
+  // extract URL from your meta/id
+  function urlFromIdAndMeta(id, meta) {
+    const m = meta[id] || {};
+    const u = m.url || '';
+    if (/^https?:\/\//i.test(u)) return u;
+    if (typeof id === 'string' && /^https?:\/\//i.test(id)) return id;
+    return '';
+  }
+
+  // ---------- EXPORT ----------
+  function exportLikes() {
+    const { idsSet, meta } = readCurrentLikes();
+    const urls = Array.from(idsSet).map(id => urlFromIdAndMeta(id, meta)).filter(Boolean);
+    const text = urls.join('\n');
+
+    // Download .txt (cross-platform)
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'liked-export.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+
+    // Best-effort clipboard
+    if (navigator.clipboard && text) navigator.clipboard.writeText(text).catch(()=>{});
+    alert(`Exported ${urls.length} link(s).`);
+  }
+
+  // ---------- IMPORT (staging) ----------
+  const parseUrls = (t) => (t || '')
+    .split(/\r?\n/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .filter(s => /^https?:\/\//i.test(s));
+
+  async function stageUploadFromDialog() {
+    const ta = document.getElementById('import-textarea');
+    const fi = document.getElementById('import-file');
+    let urls = parseUrls(ta?.value || '');
+    if (!urls.length && fi?.files?.[0]) {
+      const fileText = await fi.files[0].text();
+      urls = parseUrls(fileText);
+    }
+    if (!urls.length) { alert('No valid URLs found.'); return; }
+    writeJSON(UPLOAD_KEY, urls);
+    closeImportDialog();
+    // show the bar ONLY now (not on load)
+    showUploadBar();
+  }
+
+  function showUploadBar() {
+    const bar = document.getElementById('upload-bar');
+    if (!bar) return;
+    const urls = readJSON(UPLOAD_KEY, []);
+    const countEl   = document.getElementById('upload-count');
+    const previewEl = document.getElementById('upload-preview');
+    if (countEl) countEl.textContent = urls.length;
+    if (previewEl) {
+      const snippet = urls.slice(0,5).join(' · ');
+      previewEl.textContent = urls.length ? ` — preview: ${snippet}${urls.length>5?' …':''}` : '';
+    }
+    bar.hidden = urls.length === 0; // stays hidden until you stage
+  }
+
+  function discardUpload() {
+    writeJSON(UPLOAD_KEY, []);
+    showUploadBar(); // hides it
+  }
+
+  const nameFromUrl = (u) => {
+    try {
+      const p = new URL(u);
+      const base = decodeURIComponent(p.pathname.split('/').pop() || u);
+      return base || u;
+    } catch { return u; }
+  };
+
+  function applyUpload(mode) {
+    const urls = readJSON(UPLOAD_KEY, []);
+    if (!urls.length) { alert('No upload playlist staged.'); return; }
+
+    const { idsSet, meta } = readCurrentLikes();
+
+    // Replace clears first
+    if (mode === 'replace') {
+      idsSet.clear();
+      for (const k of Object.keys(meta)) delete meta[k];
+    }
+
+    for (const u of urls) {
+      const id = u;             // use URL as id for imported items
+      idsSet.add(id);
+      if (!meta[id]) meta[id] = { id, name: nameFromUrl(u), album: '', image: '', url: u };
+      else if (!meta[id].url) meta[id].url = u;
+    }
+
+    commitLikes(idsSet, meta);
+    writeJSON(UPLOAD_KEY, []);   // clear staging
+    showUploadBar();             // hides bar
+  }
+
+  // ---------- dialog open/close ----------
+  function openImportDialog() { const dlg = document.getElementById('import-dialog'); if (dlg) dlg.hidden = false; }
+  function closeImportDialog(){ const dlg = document.getElementById('import-dialog'); if (dlg) dlg.hidden = true;
+    const ta = document.getElementById('import-textarea'); if (ta) ta.value='';
+    const fi = document.getElementById('import-file');     if (fi) fi.value='';
+  }
+
+  // ---------- wiring (NO auto-show on load) ----------
+  function wireMinimal() {
+    document.getElementById('export-likes')?.addEventListener('click', exportLikes);
+    document.getElementById('import-likes')?.addEventListener('click', openImportDialog);
+    document.getElementById('import-stage')?.addEventListener('click', stageUploadFromDialog);
+    document.getElementById('import-cancel')?.addEventListener('click', closeImportDialog);
+
+    document.getElementById('upload-apply-merge')?.addEventListener('click', () => applyUpload('merge'));
+    document.getElementById('upload-apply-replace')?.addEventListener('click', () => applyUpload('replace'));
+    document.getElementById('upload-discard')?.addEventListener('click', discardUpload);
+
+    // IMPORTANT: do NOT call showUploadBar() here → bar stays hidden unless user stages
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wireMinimal);
+  } else {
+    wireMinimal();
+  }
+
+  // expose for debugging if you need it
+  window.AxyLikesIO = { exportLikes, stageUploadFromDialog, applyUpload, discardUpload, showUploadBar };
+})();
