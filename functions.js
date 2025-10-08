@@ -229,7 +229,7 @@ async function renderResults(query, page = 1) {
         <div class="song-actions">
           <button onclick="PlayAudio('${url}','${id}'); currentIndex=${playlist.length - 1};">▶</button>
           <button data-like="${id}" onclick="toggleLike('${id}')" class="${isLiked(id)?'liked':''}">${isLiked(id) ? '♥' : '♡'}</button>
-          <button onclick="addToQueue('${id}')" title="Add to queue">+Queue</button>
+          <button onclick="addToQueue('${id}')" title="Add to queue">➕Queue</button>
         </div>
       `;
       resultsContainer.appendChild(row);
@@ -643,3 +643,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // expose for debugging if you need it
   window.AxyLikesIO = { exportLikes, stageUploadFromDialog, applyUpload, discardUpload, showUploadBar };
 })();
+
