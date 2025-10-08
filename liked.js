@@ -62,7 +62,7 @@ function buildRow(m) {
     <div class="song-actions">
       ${url ? `<button onclick="PlayAudio('${url}','${id}'); currentIndex=${playlist.findIndex(t=>t.id===id)};">▶</button>` : `<button disabled>▶</button>`}
       <button data-like="${id}" onclick="toggleLike('${id}')" class="${isLiked(id)?'liked':''}">${isLiked(id) ? '♥' : '♡'}</button>
-      <button onclick="addToQueue('${id}')" title="Add to queue">➕</button>
+      <button onclick="addToQueue('${id}')" title="Add to queue">➕Queue</button>
     </div>
   `;
   return row;
@@ -276,3 +276,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // Persist again on unload (extra safety)
   window.addEventListener('beforeunload', saveState);
 });
+
